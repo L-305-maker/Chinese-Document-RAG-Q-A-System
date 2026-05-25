@@ -37,6 +37,7 @@ class Settings:
     EMBEDDING_MODEL: str = os.getenv("EMBEDDING_MODEL", "BAAI/bge-small-zh-v1.5")
 
     RERANK_ENABLED: bool = _get_bool("RERANK_ENABLED", True)
+    RERANK_ALLOW_DOWNLOAD: bool = _get_bool("RERANK_ALLOW_DOWNLOAD", False)
     RERANK_MODEL: str = os.getenv("RERANK_MODEL", "BAAI/bge-reranker-base")
     RERANK_CANDIDATE_MULTIPLIER: int = _get_int("RERANK_CANDIDATE_MULTIPLIER", 3)
     RERANK_MAX_CANDIDATES: int = _get_int("RERANK_MAX_CANDIDATES", 30)

@@ -82,8 +82,21 @@ class Reranker:
             self._load_attempted = True
             from sentence_transformers import CrossEncoder
 
-            self._model = CrossEncoder(self.model_name)
+            if settings.RERANK_ALLOW_DOWNLOAD:
+                self._model = CrossEncoder(self.model_name)
+            else:
+                self._model = CrossEncoder(self.model_name, local_files_only=True)
             return self._model
+        except TypeError as exc:
+            if "local_files_only" in str(exc):
+                self._load_error = (
+                    "Current sentence-transformers version does not support "
+                    "local_files_only. Set RERANK_ALLOW_DOWNLOAD=true after "
+                    "confirming model downloads are acceptable."
+                )
+                return None
+            self._load_error = str(exc)
+            return None
         except Exception as exc:
             self._load_error = str(exc)
             return None

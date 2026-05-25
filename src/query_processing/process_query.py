@@ -1,4 +1,4 @@
-from src.query_processing.normalize import Normalize_Query,normalized_query_quality
+from src.query_processing.normalize import normalized_query_quality
 from src.query_processing.query_rewriter import rewrite_query
 from src.query_processing.query_router import route_query
 
