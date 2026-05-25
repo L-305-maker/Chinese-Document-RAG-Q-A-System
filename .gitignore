@@ -1,2 +1,7 @@
-.vsocde
+.vscode/
 .txt
+.env
+__pycache__
+test.py
+*.pdf
+data/

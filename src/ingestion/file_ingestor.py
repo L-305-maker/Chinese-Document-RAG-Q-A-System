@@ -8,15 +8,11 @@ from src.ingestion.cleaner import DocumentCleaner
 from src.ingestion.splitter import DocumentSplitter
 from src.ingestion.metadata_builder import MetadataBuilder
 from src.vectorstore.chroma_store import ChromaVectorStore
+from src.ingestion.deduplicator import DocumentDeduplicator
 
 
 class FileIngestor:
-    def __init__(
-        self,
-        vector_store: ChromaVectorStore,
-        chunk_size: int = 500,
-        chunk_overlap: int = 100,
-    ):
+    def __init__(self,vector_store: ChromaVectorStore,chunk_size: int = 500,chunk_overlap: int = 100,):
         self.vector_store = vector_store
         self.loader_factory = LoaderFactory()
         self.cleaner = DocumentCleaner()
@@ -25,6 +21,7 @@ class FileIngestor:
             chunk_overlap=chunk_overlap,
         )
         self.metadata_builder = MetadataBuilder()
+        self.deduplicator = DocumentDeduplicator()
 
     def ingest(self, file_path: str) -> List[Document]:
         file_type = detect_file_type(file_path)
@@ -42,6 +39,8 @@ class FileIngestor:
             file_path=file_path,
             file_type=file_type,
         )
+
+        chunks = self.deduplicator.deduplicator(chunks = chunks)
 
         self.vector_store.add_documents(chunks)
 

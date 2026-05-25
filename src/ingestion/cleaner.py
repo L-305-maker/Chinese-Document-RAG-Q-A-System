@@ -3,6 +3,9 @@ from typing import List
 from src.document import Document
 
 class DocumentCleaner():
+
+    #用于清洗文件，将文件清洗后在收入向量检索库
+
     def clean_text(self, text: str) -> str:
         text = text.replace("\r\n", "\n").replace("\r", "\n")
 

@@ -1,6 +1,7 @@
 import re
 from typing import Dict, Any
 
+#检测输入的文本是否为乱码
 
 class PromptValidator:
     def __init__(self,max_length: int = 1000,garbled_threshold: float = 0.5,):
@@ -23,6 +24,7 @@ class PromptValidator:
             "ã",
         ]
 
+
     def validate(self, prompt: str) -> Dict[str, Any]:
         result = {
             "is_valid": True,
@@ -30,15 +32,15 @@ class PromptValidator:
             "reasons": [],
             "normalized_prompt": None,
         }
-
+        # 检测到prompt为空，则直接输出
         if prompt is None:
             result["is_valid"] = False
             result["score"] = 1.0
             result["reasons"].append("prompt_is_none")
             return result
-
+        #prompt非空，进行文段首尾的空位去除
         prompt = prompt.strip()
-
+        
         if len(prompt) == 0:
             result["is_valid"] = False
             result["reasons"].append("empty_prompt")

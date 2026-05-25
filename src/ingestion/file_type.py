@@ -1,6 +1,8 @@
 from pathlib import Path
 
-def type_file(file_Path:str)->str:
+
+#用于判断文件类型，若非适配文件类型，则抛出异常
+def detect_file_type(file_Path:str)->str:
     suffix = Path(file_Path).suffix.lower()
 
     if suffix == ".pdf":
@@ -16,4 +18,4 @@ def type_file(file_Path:str)->str:
         return "word"
     
     else:
-        raise ValueError(f"Supposed file type:{file_Path}")
+        raise ValueError(f"Unsupposed file type:{file_Path}")

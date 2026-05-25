@@ -3,6 +3,7 @@ from typing import List
 from langchain_chroma import Chroma
 from langchain_core.documents import Document as LangChainDocument
 
+from config.setting import settings
 from src.document import Document
 from src.embedding.embedding_model import get_embedding_model
 
@@ -10,11 +11,10 @@ from src.embedding.embedding_model import get_embedding_model
 class ChromaVectorStore:
     def __init__(
         self,
-        persist_directory: str = "./data/vector_db",
-        collection_name: str = "rag_docs",
+        persist_directory: str = settings.VECTOR_DB_PATH,
+        collection_name: str = settings.COLLECTION_NAME,
     ):
         self.embedding_model = get_embedding_model()
-
         self.vector_store = Chroma(
             collection_name=collection_name,
             embedding_function=self.embedding_model,
@@ -30,8 +30,8 @@ class ChromaVectorStore:
             for doc in documents
         ]
 
-        self.vector_store.add_documents(lc_docs)
-
+        ids = [doc.metadata["chunk_id"] for doc in documents]
+        self.vector_store.add_documents(lc_docs, ids=ids)
         print(f"Added {len(documents)} chunks to Chroma.")
 
     def similarity_search(self, query: str, k: int = 5):

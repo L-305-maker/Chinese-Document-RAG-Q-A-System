@@ -7,6 +7,9 @@ from src.document import Document
 
 
 class DocumentSplitter:
+
+    #用于切分文件内的文段
+
     def __init__(self, chunk_size: int = 500, chunk_overlap: int = 100):
         self.splitter = RecursiveCharacterTextSplitter(
             chunk_size=chunk_size,

@@ -9,6 +9,9 @@ from src.document import Document
 
 
 class Baseloader():
+
+    #模板
+    
     @abstractmethod
     def load(self,file_Path:str)->List[Document]:
         pass
@@ -22,15 +25,15 @@ class pdf_loader(Baseloader):
 
         for page_index,page in enumerate(reader.pages):
             text = page.extract_text() or ""
-            documents.append(
-                page_context = text,
-                metadata = {
-                    "source":path.name,
-                    "file_path":str(file_Path),
-                    "file_type":"pdf",
-                    "page":page_index+1
-                }
-            )
+            documents.append(Document(
+                page_content = text,
+                    metadata = {
+                        "source":path.name,
+                        "file_path":str(file_Path),
+                        "file_type":"pdf",
+                        "page":page_index+1
+                    }
+            ))
 
         return documents
     
@@ -49,14 +52,14 @@ class word_loader(Baseloader):
         full_text = "\n".join(paragraphs)
 
         documents = []
-        documents.append(
-            page_context = full_text,
+        documents.append(Document(
+            page_content = full_text,
             metadata = {
                 "source":path.name,
-                "file_name":str(file_Path),
+                "file_path":str(file_Path),
                 "file_type":"word"
             }
-        )
+        ))
 
         return documents
     
@@ -95,7 +98,9 @@ class Markdownloader(Baseloader):
             )
         ]
 
-class loaderFactory():
+
+#将各个文件统一输入到LoaderFactory进行处理
+class LoaderFactory():
     def __init__(self):
         self.loaders = {
             "txt": Txtloader(),
@@ -107,5 +112,4 @@ class loaderFactory():
     def get_loader(self, file_type: str) -> Baseloader:
         if file_type not in self.loaders:
             raise ValueError(f"No loader found for file type: {file_type}")
-
         return self.loaders[file_type]
