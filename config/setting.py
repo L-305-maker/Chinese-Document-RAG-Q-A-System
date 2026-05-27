@@ -26,15 +26,29 @@ def _get_int(name: str, default: int) -> int:
         return default
 
 
+def _get_float(name: str, default: float) -> float:
+    value = os.getenv(name)
+    if value is None or not value.strip():
+        return default
+    try:
+        return float(value)
+    except ValueError:
+        return default
+
+
 class Settings:
     LLM_API_KEY: str = os.getenv("LLM_API_KEY", "")
     LLM_BASE_URL: str = os.getenv("LLM_BASE_URL", "")
     LLM_MODEL: str = os.getenv("LLM_MODEL", "deepseek-chat")
+    LLM_TIMEOUT_SECONDS: int = _get_int("LLM_TIMEOUT_SECONDS", 60)
+    LLM_MAX_RETRIES: int = _get_int("LLM_MAX_RETRIES", 2)
+    LLM_RETRY_DELAY_SECONDS: float = _get_float("LLM_RETRY_DELAY_SECONDS", 1.0)
 
     VECTOR_DB_PATH: str = os.getenv("VECTOR_DB_PATH", "./data/vector_db")
     COLLECTION_NAME: str = os.getenv("COLLECTION_NAME", "rag_docs")
 
     EMBEDDING_MODEL: str = os.getenv("EMBEDDING_MODEL", "BAAI/bge-small-zh-v1.5")
+    EMBEDDING_DEVICE: str = os.getenv("EMBEDDING_DEVICE", "auto").lower()
 
     RERANK_ENABLED: bool = _get_bool("RERANK_ENABLED", True)
     RERANK_ALLOW_DOWNLOAD: bool = _get_bool("RERANK_ALLOW_DOWNLOAD", False)

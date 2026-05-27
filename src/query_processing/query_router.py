@@ -134,9 +134,6 @@ def classify_query_type(
     if _contains_any(query, OUT_OF_SCOPE_KEYWORDS):
         return QueryType.OUT_OF_SCOPE
 
-    if need_decomposition or has_sub_questions:
-        return QueryType.MULTI_HOP
-
     if _contains_any(query, SUMMARY_KEYWORDS):
         return QueryType.SUMMARY
 
@@ -247,15 +244,5 @@ def route_query(query: str,search_queries: list[str] | None = None,sub_questions
     )
 
     route_result = decide_route_by_type(query_type)
-
-    # 如果 LLM 已经生成了多个 search_queries，即使是普通 fact_qa，也可以考虑 multi_query
-    if (
-        route_result.need_retrieval
-        and len(search_queries) >= 2
-        and query_type == QueryType.FACT_QA
-    ):
-        route_result.retrieval_mode = RetrievalMode.MULTI_QUERY
-        route_result.use_sub_questions = False
-        route_result.reason += " 检测到多个 search_queries，切换为 multi_query 检索。"
 
     return route_result
