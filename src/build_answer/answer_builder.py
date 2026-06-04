@@ -1,22 +1,8 @@
+from src.build_answer.context_builder import build_context
+
 
 def build_answer_prompt(question: str, documents: list[dict]) -> str:
-    context_parts = []
-
-    for i, doc in enumerate(documents, start=1):
-        metadata = doc.get("metadata", {})
-        source = metadata.get("source", "unknown")
-        page = metadata.get("page")
-        content = doc.get("content", "")
-
-        source_text = source
-        if page:
-            source_text += f"，第 {page} 页"
-
-        context_parts.append(
-            f"[资料 {i}]\n来源：{source_text}\n内容：{content}"
-        )
-
-    context = "\n\n".join(context_parts)
+    context = build_context(documents)
 
     return f"""
 你是一个基于本地知识库的中文文档问答助手。
@@ -25,11 +11,11 @@ def build_answer_prompt(question: str, documents: list[dict]) -> str:
 如果参考资料不足以回答，请说明“根据现有资料无法回答”，不要编造。
 回答末尾请简要列出使用到的来源。
 
-用户问题：
+用户问题:
 {question}
 
-参考资料：
+参考资料:
 {context}
 
-请给出答案：
+请给出答案:
 """.strip()

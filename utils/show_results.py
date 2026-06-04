@@ -16,6 +16,17 @@ def show_result(result: dict[str, Any], question: str) -> None:
     if result.get("answer") is not None:
         print(f"\nanswer:\n{result.get('answer')}")
 
+    answer_validation = result.get("answer_validation") or {}
+    if answer_validation:
+        print("\nanswer_validation:")
+        print(
+            f"  status={answer_validation.get('answer_status')} "
+            f"source_cited={answer_validation.get('source_cited')} "
+            f"length={answer_validation.get('answer_length')}"
+        )
+        _print_list("  warnings", answer_validation.get("warnings"))
+        _print_list("  errors", answer_validation.get("errors"))
+
     print("\nquery:")
     print(
         f"  type={query_info.get('query_type')} "

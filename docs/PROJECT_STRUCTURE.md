@@ -38,8 +38,6 @@ Chinese Document RAG Q&A System/
 |   |   |-- metadata_builder.py
 |   |   |-- splitter.py
 |   |
-|   |-- knowledge_base/
-|   |
 |   |-- llm/
 |   |   |-- __init__.py
 |   |   |-- llm_client.py
@@ -78,7 +76,6 @@ Chinese Document RAG Q&A System/
 
 - `__pycache__/` 是 Python 运行时生成的缓存目录，不属于源码结构说明重点。
 - `data/vector_db/` 是 Chroma 向量库持久化目录，属于运行产物。
-- `src/knowledge_base/` 和 `utils/` 当前为空目录，可作为后续知识库封装或通用工具函数的预留位置。
 
 ## 顶层文件与目录
 

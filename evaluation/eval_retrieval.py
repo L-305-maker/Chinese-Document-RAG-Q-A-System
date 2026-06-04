@@ -2,7 +2,12 @@ import json
 from pathlib import Path
 from datetime import datetime
 import argparse
+import sys
 from typing import Any
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
 from config.setting import settings
 from src.query_processing.process_query import process_query
@@ -152,21 +157,14 @@ def print_summary(summary: dict[str, Any]) -> None:
 
 def save_report(results: list[dict[str, Any]], summary: dict[str, Any], output_dir: str) -> None:
     output_path = Path(output_dir)
-    output_path.mkdir(parents=True, exist_ok=True)
-
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    run_dir = ensure_dir(output_path / timestamp)
+    latest_dir = ensure_dir(output_path / "latest_evaluation")
 
-    timepath = str(timestamp)
-
-    eval_path = output_path/ timepath / "eval.jsonl"
-    summary_path = output_path / timepath /"summary.json"
-    latest_eval_path = output_path / "latest_evaluation" /"latest_eval.jsonl"
-    latest_summary_path = output_path / "latest_evaluation" /"latest_summary.json"
-
-    ensure_dir(output_path / timepath)
-    ensure_dir(output_path / timepath)
-    ensure_dir(output_path / "latest_evaluation")
-    ensure_dir(output_path / "latest_evaluation")
+    eval_path = run_dir / "eval.jsonl"
+    summary_path = run_dir / "summary.json"
+    latest_eval_path = latest_dir / "latest_eval.jsonl"
+    latest_summary_path = latest_dir / "latest_summary.json"
 
     _write_jsonl(eval_path, results)
     _write_jsonl(latest_eval_path, results)

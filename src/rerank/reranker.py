@@ -30,7 +30,7 @@ class Reranker:
             return {
                 "status": "skipped",
                 "reason": "rerank_disabled",
-                "documents": documents[:top_k] if top_k else documents,
+                "documents": documents,
             }
 
         model = self._load_model()
@@ -39,7 +39,7 @@ class Reranker:
                 "status": "skipped",
                 "reason": "reranker_unavailable",
                 "error": self._load_error,
-                "documents": documents[:top_k] if top_k else documents,
+                "documents": documents,
             }
 
         pairs = [(query, doc.get("content", "")) for doc in documents]
@@ -51,7 +51,7 @@ class Reranker:
                 "status": "skipped",
                 "reason": "rerank_failed",
                 "error": str(exc),
-                "documents": documents[:top_k] if top_k else documents,
+                "documents": documents,
             }
 
         ranked_documents = []
@@ -69,7 +69,7 @@ class Reranker:
         return {
             "status": "success",
             "model": self.model_name,
-            "documents": ranked_documents[:top_k] if top_k else ranked_documents,
+            "documents": ranked_documents,
         }
 
     def _load_model(self):

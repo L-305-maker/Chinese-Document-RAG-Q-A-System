@@ -6,6 +6,7 @@ from config.setting import settings
 from src.query_processing.query_router import RetrievalMode
 from src.rerank.reranker import Reranker, get_reranker
 from src.validation.prompt_validator import PromptValidator
+from src.retrieval.retrieval_enhancer import enhance_documents
 
 if TYPE_CHECKING:
     from src.vectorstore.chroma_store import ChromaVectorStore
@@ -30,6 +31,7 @@ class VectorRetriever:
         candidate_k: int | None = None,
         need_rerank: bool = False,
         rerank_query: str | None = None,
+        enhance: bool = True,
     ) -> Dict[str, Any]:
         validation = self.prompt_validator.validate(prompt)
         if not validation["is_valid"]:
@@ -56,6 +58,9 @@ class VectorRetriever:
             top_k=final_top_k,
             need_rerank=need_rerank,
         )
+
+        if enhance:
+            documents = self._enhance_documents(documents, final_top_k)
 
         return {
             "status": "success",
@@ -107,6 +112,7 @@ class VectorRetriever:
                 top_k=per_query_k,
                 candidate_k=per_query_k,
                 need_rerank=False,
+                enhance=False,
             )
 
             if result["status"] != "success":
@@ -135,6 +141,8 @@ class VectorRetriever:
             top_k=final_top_k,
             need_rerank=need_rerank,
         )
+
+        documents = self._enhance_documents(documents, final_top_k)
 
         return {
             "status": "success",
@@ -206,7 +214,7 @@ class VectorRetriever:
         need_rerank: bool,
     ) -> tuple[List[Dict[str, Any]], Dict[str, Any]]:
         if not need_rerank:
-            return documents[:top_k], {"status": "skipped", "reason": "route_disabled"}
+            return documents, {"status": "skipped", "reason": "route_disabled"}
 
         rerank_result = self.reranker.rerank(
             query=query,
@@ -219,6 +227,13 @@ class VectorRetriever:
             for key, value in rerank_result.items()
             if key != "documents"
         }
+
+    @staticmethod
+    def _enhance_documents(
+        documents: List[Dict[str, Any]],
+        top_k: int,
+    ) -> List[Dict[str, Any]]:
+        return enhance_documents(documents, top_k=top_k)
 
     def _queries_from_route(
         self,
